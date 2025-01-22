@@ -53,6 +53,12 @@ public class Campaign {
 		this.description = description;
 		this.tasks = tasks;
 	}
+	
+	public Campaign(String code, String name, String description) {
+		this.code = code;
+		this.name = name;
+		this.description = description;
+	}
 
 	@Override
 	public String toString() {

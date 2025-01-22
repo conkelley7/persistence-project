@@ -1,8 +1,11 @@
 package com.kelley.lsd;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +45,18 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 	 */
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		
+		/*
+		 * Repository SELECT method implementations.
+		 */
+		
+		
 		LOG.info("Starting Spring Boot application.");
 		
+		// Commenting out for now while testing other implementations
+		// Also commenting out data.sql while I test other implementation as manually inserting ID causes issues with JPA save()
+		
+		/*
 		Iterable<Campaign> allCampaigns = campaignRepository.findAll();
 		LOG.info("All Campaigns:\n{}", allCampaigns);
 		
@@ -75,6 +88,58 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 		Iterable<Campaign> distinctCampaigns = campaignRepository.findDistinctByTasksNameContaining("Task");
 		LOG.info("Distinct campaigns with Task name containing \"Task\":");
 		distinctCampaigns.forEach(campaign -> LOG.info("{}", campaign));
+		*/
+		
+		/*
+		 * Persisting new entities.
+		 */
+		
+		// Create a new campaign. Before persistence, ID is null.
+		Campaign newCampaign = new Campaign("NEW1", "new campaign", "new campaign description");
+		LOG.info("Campaign id before persisting: \n{}", newCampaign.getId());
+		
+		// Persist campaign. ID should be set automatically be persistence provider.
+		campaignRepository.save(newCampaign);
+		LOG.info("Campaign id after persisting:\n{}", newCampaign.getId());
+		
+		/*
+		 * Updating entities
+		 */
+		
+		// Change name
+		newCampaign.setName("updated name");
+		
+		// Create new tasks and assign to tasks
+		Set<Task> newCampaignTasks = Set.of(new Task("task name", "task description", LocalDate.of(2025, 1, 1), TaskStatus.TO_DO, newCampaign));
+		newCampaign.setTasks(newCampaignTasks);
+		
+		/*
+		 *  Spring detects this object already exists in datbase and updates it instead.
+		 *  Re-assign output to newCampaign to ensure child Task entities get populated with generated id from database as well.
+		 */
+		newCampaign = campaignRepository.save(newCampaign);
+		
+		LOG.info("Child Task after updating\n{}", newCampaign.getTasks());
+		
+		/*
+		 * Saving and/or updating multiple entities at once using saveAll()
+		 */
+		
+		// Updating existing campaign
+		newCampaign.setName("updated again");
+		
+		// Create a new campaign
+		Campaign newCampaign2 = new Campaign("NEW2", "another campaign", "another campaign description");
+		
+		// Save to Iterable and use saveAll() to save, making sure to reassign to severalCampaigns Iterable
+		Iterable<Campaign> severalCampaigns = Arrays.asList(newCampaign, newCampaign2);
+		severalCampaigns = campaignRepository.saveAll(severalCampaigns);
+		
+		/*
+		 * It is worth noting that all Spring Data JPA operations offered out-of-the-box (such as saveAll()) are handled as transactions.
+		 * This means if one of the save operations fails, then nothing is committed to the DB.
+		 */
+		
 	}
 	
 	public static void main(String[] args) {
