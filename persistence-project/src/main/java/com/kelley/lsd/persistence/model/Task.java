@@ -82,15 +82,11 @@ public class Task {
 		return Objects.hash(this.getUuid());
 	}
 	
-	/*
-	 * Generally only want to use basic attributes in the toString implementation.
-	 * In this case, we are opting to include the associated Campaign mainly for academic purposes,
-	 * so we could see the operations' output more clearly.
-	 */
+	
 	@Override
     public String toString() {
         return "Task [id=" + id + ", name=" + name + ", description=" + description + ", dueDate=" + dueDate
-            + ", status=" + status + ", campaign=" + campaign + ", assignee=" + assignee + "]";
+            + ", status=" + status + "]";
     }
 	
 	public Long getId() {
