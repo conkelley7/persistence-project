@@ -6,6 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.kelley.lsd.persistence.model.Campaign;
 
+import jakarta.transaction.Transactional;
+
 public interface CampaignRepository extends CrudRepository<Campaign, Long> {
 	
 	// Find campaigns by their code.
@@ -13,6 +15,9 @@ public interface CampaignRepository extends CrudRepository<Campaign, Long> {
 	
 	// Find number of campaigns with a particular name.
 	int countByName(String name);
+	
+	// Find campaigns containing a certain substring in their name
+	Iterable<Campaign> findByNameContaining(String substring);
 	
 	/*
 	 * Some other subject keywords supported include:
@@ -41,4 +46,18 @@ public interface CampaignRepository extends CrudRepository<Campaign, Long> {
 	 * The following query, without distinct, could return multiple duplicate campaigns.
 	 */
 	Iterable<Campaign> findDistinctByTasksNameContaining(String taskName);
+	
+	/*
+	 * Delete methods
+	 * All custom delete methods need to be executed within a transaction (@Transactional) 
+	 */
+	
+	// Can use Long to return the number of entities deleted, otherwise void.
+	@Transactional
+	Long deleteByNameContaining(String name);
+	
+	// "remove" keyword can also be used instead.
+	@Transactional
+	void removeByNameContaining(String name);
+	
 }

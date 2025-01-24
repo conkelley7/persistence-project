@@ -46,12 +46,15 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		
+		LOG.info("Starting Spring Boot application.");
+		
+		
 		/*
 		 * Repository SELECT method implementations.
 		 */
 		
 		
-		LOG.info("Starting Spring Boot application.");
+		
 		
 		// Commenting out for now while testing other implementations
 		// Also commenting out data.sql while I test other implementation as manually inserting ID causes issues with JPA save()
@@ -139,6 +142,34 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 		 * It is worth noting that all Spring Data JPA operations offered out-of-the-box (such as saveAll()) are handled as transactions.
 		 * This means if one of the save operations fails, then nothing is committed to the DB.
 		 */
+		
+		/*
+		 * Deleting entities from database
+		 */
+		
+		/*
+		 *  Use an entity reference and call delete method of the repository
+		 *
+		 *  Campaign c1 = campaignRepository.findById(1L).get();
+		 *	campaignRepository.delete(c1);
+		 */
+		
+		
+		/*
+		 *  Delete an entity by providing an ID
+		 *  
+		 *  campaignRepository.deleteById(2L);
+		 */
+		
+		// Delete entities with name containing "campaign" (custom method)
+		// Long deleteCount = campaignRepository.deleteByNameContaining("campaign");
+		// LOG.info("Number of removed campaigns:\n{}", deleteCount);
+		
+		// Can also fetch entities using findBy read query and then delete using deleteAll()
+		
+		
+		
+		
 		
 	}
 	
