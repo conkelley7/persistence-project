@@ -3,6 +3,7 @@ package com.kelley.lsd.persistence.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.kelley.lsd.persistence.model.Task;
@@ -39,6 +40,19 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
 	 * In the query below, AssigneeFirstName is interpreted as assignee.firstName
 	 */
 	List<Task> findByAssigneeFirstName(String name);
+	
+	/*
+	 * Custom query to get the number of Tasks that are due each year.
+	 * 
+	 * Use GROUP BY clause to group tasks by the year in which they're due
+	 * Retreives a List of List objects
+	 * 
+	 * The outer list represents a collection of result rows.
+	 * Inner list contains two values - one for grouped year and the other for the corresponding number of tasks due that year.
+	 */
+	@Query("select count(*), year(t.dueDate) from Task t group by year(t.dueDate)")
+	List<List<Integer>> countByDueYear();
+	
 	
 
 }

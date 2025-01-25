@@ -167,7 +167,17 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 		
 		// Can also fetch entities using findBy read query and then delete using deleteAll()
 		
+		/*
+		 * Custom queries - demonstration usage
+		 */
 		
+		Optional<String> campaignName = campaignRepository.findNameByCode();
+		// If a value is assigned to campaignName, it is passed to the lambda function as 'c'
+		campaignName.ifPresent(c -> LOG.info("Campaign Name:\n{}", c));
+		
+		// Calling native SQL query
+		Campaign campaign = campaignRepository.findSingleCampaign();
+		LOG.info("Single campaign:\n{}", campaign);
 		
 		
 		
