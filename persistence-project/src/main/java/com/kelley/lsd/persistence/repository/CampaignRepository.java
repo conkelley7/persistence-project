@@ -1,10 +1,12 @@
 package com.kelley.lsd.persistence.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.kelley.lsd.persistence.model.Campaign;
 
@@ -71,6 +73,8 @@ public interface CampaignRepository extends CrudRepository<Campaign, Long> {
 	@Query("select c from Campaign c where c.name='Campaign 3' and c.description='About Campaign 3'")
 	List<Campaign> findWithNameAndDescription();
 	
+	// CASE sensitive entities! Would fail if I typed 'campaign' rather than 'Campaign'
+	
 	// Unlike derived methods, the method name is unimportant when using @Query
 	
 	// Need to be careful about return type. For example, if we used Optional and the query returned multiple entities, the query would fail.
@@ -98,5 +102,44 @@ public interface CampaignRepository extends CrudRepository<Campaign, Long> {
 	
 	@Query(nativeQuery=true, value="SELECT * FROM campaign limit 1")
 	Campaign findSingleCampaign();
+	
+	/*
+	 * Using positional parameters
+	 * In the example below, 'name' (first parameter) maps to '?1' and 'description' maps to '?2'
+	 */
+	@Query("select c from Campaign c where c.name=?1 and c.description=?2")
+	List<Campaign> findWithNameAndDescriptionPositionalBind(String name, String description);
+	
+	/*
+	 * Using named parameters - much more flexible than positional parameters
+	 * Named parameters in the query start with a colon followed by the name of the parameter
+	 */
+	@Query("select c from Campaign c where c.name=:name and c.description=:description")
+	List<Campaign> findWithNameAndDescriptionNameBind(
+			@Param("description") String description,
+			@Param("name") String name);
+	
+	/*
+	 * Using binding parameters for "IN" queries
+	 */
+	@Query("select c from Campaign c where c.code in ?1")
+	List<Campaign> findWithCodeIn(Collection<String> codes);
+	
+	/*
+	 * Using binding parameters for LIKE queries 
+	 */
+	@Query("from Campaign c where c.description like %:keyword%")
+	List<Campaign> findWithDescriptionIsLike(@Param("keyword") String keyword);
+	
+	/*
+	 * Building a LIKE expression with more than one keyword requires a CONCAT
+	 */
+	@Query("select c from Campaign c where c.description like CONCAT(:prefix, '%', :suffix)")
+	List<Campaign> findWithDescriptionWithPrefixAndSuffix(
+			@Param("prefix") String prefix,
+			@Param("suffix") String suffix);
+	
+	// Side note: Not covered explicitly in this section, but when using @Query, we need to sanitize parameters ourselves when
+	// they come from an unknown source.
 	
 }

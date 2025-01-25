@@ -179,6 +179,26 @@ public class PersistenceProjectApplication implements ApplicationRunner {
 		Campaign campaign = campaignRepository.findSingleCampaign();
 		LOG.info("Single campaign:\n{}", campaign);
 		
+		// Calling repository method with positional parameters
+		List<Campaign> certainCampaigns = campaignRepository.findWithNameAndDescriptionPositionalBind("another campaign", "another campaign description");
+		LOG.info("Campaigns with matching name and description:\n{}", certainCampaigns);
+		
+		// Calling repository method with @Param named parameters
+		List<Campaign> moreCampaigns = campaignRepository.findWithNameAndDescriptionNameBind("another campaign description", "another campaign");
+		LOG.info("Campaigns with matching name and description (again):\n{}", moreCampaigns);
+		
+		// Example usage, using binding parameters (collection) for "IN" query
+		List<Campaign> evenMoreCampaigns = campaignRepository.findWithCodeIn(Set.of("C1", "NEW2"));
+		LOG.info("Find a campaign using 'IN' query:\n{}", evenMoreCampaigns);
+		
+		// Binding paramets in LIKE query example
+		List<Campaign> additionalCampaigns = campaignRepository.findWithDescriptionIsLike("campaign");
+		LOG.info("Campaigns with description containing 'campaign':\n{}", additionalCampaigns);
+		
+		// Example of CONCAT query from repository
+		List<Campaign> howManyMoreCampaigns = campaignRepository.findWithDescriptionWithPrefixAndSuffix("another", "description");
+		LOG.info("Campaigns with matching prefix and suffix:\n{}", howManyMoreCampaigns);
+		
 		
 		
 	}
